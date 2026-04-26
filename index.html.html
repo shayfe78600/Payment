@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Rozgar Pakistan Payment</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --green: #00b050;
+    --green-dark: #007a38;
+    --gold: #c8963e;
+    --white: #ffffff;
+    --gray: #888;
+    --text: #1a1a1a;
+    --border: #e0e0e0;
+  }
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(160deg, #f0faf4 0%, #e8f5e9 40%, #fff9e6 100%);
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .container { width: 100%; max-width: 420px; }
+
+  .header { text-align: center; margin-bottom: 24px; animation: fadeDown 0.5s ease both; }
+  .flag-stripe { display: flex; justify-content: center; gap: 6px; margin-bottom: 14px; }
+  .flag-stripe span { display: block; height: 4px; border-radius: 2px; }
+  .flag-stripe .g { width: 48px; background: var(--green); }
+  .flag-stripe .w { width: 16px; background: #ccc; }
+  .logo-circle {
+    width: 64px; height: 64px; background: var(--green); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 14px; box-shadow: 0 4px 20px rgba(0,176,80,0.25); font-size: 26px;
+  }
+  .title { font-size: 20px; font-weight: 700; color: var(--green-dark); }
+  .subtitle { font-size: 12px; color: var(--gold); font-weight: 600; margin-top: 4px; letter-spacing: 0.8px; text-transform: uppercase; }
+
+  .amount-card {
+    background: var(--green-dark); border-radius: 16px; padding: 18px 20px;
+    text-align: center; margin-bottom: 20px; animation: fadeUp 0.5s 0.1s ease both;
+    position: relative; overflow: hidden;
+  }
+  .amount-card::before {
+    content: ''; position: absolute; top: -30px; right: -30px;
+    width: 100px; height: 100px; background: rgba(255,255,255,0.06); border-radius: 50%;
+  }
+  .amount-label { font-size: 11px; color: rgba(255,255,255,0.7); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+  .amount-value { font-size: 36px; font-weight: 700; color: white; letter-spacing: -1px; }
+  .amount-value span { font-size: 18px; font-weight: 400; opacity: 0.8; }
+  .amount-note { font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 6px; }
+
+  .section-label {
+    font-size: 12px; color: var(--gray); font-weight: 500;
+    letter-spacing: 0.8px; text-transform: uppercase;
+    margin-bottom: 12px; padding-left: 4px;
+    animation: fadeUp 0.5s 0.2s ease both;
+  }
+
+  .banks-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+
+  .bank-card {
+    background: var(--white); border: 1.5px solid var(--border);
+    border-radius: 14px; padding: 12px 16px;
+    display: flex; align-items: center; gap: 14px;
+    cursor: pointer; transition: all 0.2s ease; animation: fadeUp 0.5s ease both;
+  }
+  .bank-card:nth-child(1){animation-delay:0.15s}
+  .bank-card:nth-child(2){animation-delay:0.2s}
+  .bank-card:nth-child(3){animation-delay:0.25s}
+  .bank-card:nth-child(4){animation-delay:0.3s}
+  .bank-card:nth-child(5){animation-delay:0.35s}
+  .bank-card:hover { border-color: var(--green); box-shadow: 0 4px 16px rgba(0,176,80,0.12); transform: translateY(-1px); }
+  .bank-card:active { transform: scale(0.98); }
+
+  .bank-logo-wrap {
+    width: 52px; height: 52px; border-radius: 12px;
+    background: #f8f8f8; border: 1px solid #ececec;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; overflow: hidden;
+  }
+  .bank-logo-wrap img { width: 100%; height: 100%; object-fit: contain; padding: 7px; }
+  .bank-logo-fallback { font-size: 13px; font-weight: 700; }
+
+  .bank-info { flex: 1; }
+  .bank-name { font-size: 15px; font-weight: 600; color: var(--text); line-height: 1.2; }
+  .bank-type { font-size: 11px; color: var(--gray); margin-top: 2px; }
+
+  .bank-arrow { color: #ccc; font-size: 20px; transition: color 0.2s, transform 0.2s; }
+  .bank-card:hover .bank-arrow { color: var(--green); transform: translateX(3px); }
+
+  .detail-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5); z-index: 100;
+    align-items: flex-end; justify-content: center; padding: 20px;
+  }
+  .detail-overlay.open { display: flex; animation: fadeIn 0.2s ease; }
+  .detail-panel {
+    background: white; border-radius: 24px 24px 16px 16px;
+    padding: 28px 24px 32px; width: 100%; max-width: 420px;
+    animation: slideUp 0.3s ease;
+  }
+  .detail-handle { width: 36px; height: 4px; background: #e0e0e0; border-radius: 2px; margin: 0 auto 20px; }
+  .detail-bank-header {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
+  }
+  .detail-logo-wrap {
+    width: 54px; height: 54px; border-radius: 12px;
+    background: #f8f8f8; border: 1px solid #ececec;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; overflow: hidden;
+  }
+  .detail-logo-wrap img { width: 100%; height: 100%; object-fit: contain; padding: 7px; }
+  .detail-title { font-size: 17px; font-weight: 700; color: var(--text); }
+  .detail-subtitle { font-size: 12px; color: var(--gray); margin-top: 2px; }
+
+  .detail-rows { display: flex; flex-direction: column; }
+  .detail-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 13px 0; border-bottom: 1px solid #f0f0f0;
+  }
+  .detail-row:last-child { border-bottom: none; }
+  .detail-key { font-size: 12px; color: var(--gray); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+  .detail-val { font-size: 14px; font-weight: 600; color: var(--text); text-align: right; max-width: 60%; word-break: break-all; }
+  .copy-btn {
+    display: flex; align-items: center; gap: 5px;
+    background: none; border: none; cursor: pointer;
+    color: var(--green-dark); font-size: 12px; font-weight: 600;
+    padding: 3px 0; font-family: 'Poppins', sans-serif; transition: opacity 0.2s;
+  }
+  .copy-btn:hover { opacity: 0.7; }
+
+  .close-detail {
+    margin-top: 20px; width: 100%; padding: 14px;
+    background: var(--green); color: white;
+    border: none; border-radius: 12px;
+    font-size: 15px; font-weight: 600; cursor: pointer;
+    font-family: 'Poppins', sans-serif; transition: background 0.2s;
+  }
+  .close-detail:hover { background: var(--green-dark); }
+
+  .toast {
+    position: fixed; bottom: 30px; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #1a1a1a; color: white; padding: 10px 20px;
+    border-radius: 20px; font-size: 13px; font-weight: 500;
+    opacity: 0; transition: all 0.3s ease; z-index: 999; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .footer { text-align: center; font-size: 11px; color: var(--gray); margin-top: 8px; line-height: 1.7; animation: fadeUp 0.5s 0.5s ease both; }
+
+  @keyframes fadeDown { from{opacity:0;transform:translateY(-16px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+  @keyframes slideUp { from{transform:translateY(40px);opacity:0} to{transform:translateY(0);opacity:1} }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="flag-stripe"><span class="g"></span><span class="w"></span><span class="g"></span></div>
+    <div class="logo-circle">🇵🇰</div>
+    <div class="title">Digital Rozgar Pakistan</div>
+    <div class="subtitle">Lucky Draw 2026</div>
+  </div>
+
+  <div class="amount-card">
+    <div class="amount-label">Entry Fee</div>
+    <div class="amount-value"><span>Rs. </span>375</div>
+    <div class="amount-note">Account Title: Muhammad Shafiullah</div>
+  </div>
+
+  <div class="section-label">Bank choose karein</div>
+
+  <div class="banks-list">
+
+    <div class="bank-card" onclick="openBank('nayapay')">
+      <div class="bank-logo-wrap">
+        <img src="https://play-lh.googleusercontent.com/RxggBRFdRU7YCFIhVqPVjrN_Vw5cqkGMi_OdVwWh2mxHWJgZPSH6hHNJMHp0OQMLA=w96-h96-rw" alt="NayaPay" onerror="this.outerHTML='<span class=bank-logo-fallback style=color:#e91e8c>NP</span>'">
+      </div>
+      <div class="bank-info">
+        <div class="bank-name">NayaPay</div>
+        <div class="bank-type">Digital Wallet</div>
+      </div>
+      <div class="bank-arrow">›</div>
+    </div>
+
+    <div class="bank-card" onclick="openBank('jazzcash')">
+      <div class="bank-logo-wrap">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/JazzCash_logo_%282025%29.png/240px-JazzCash_logo_%282025%29.png" alt="JazzCash" onerror="this.outerHTML='<span class=bank-logo-fallback style=color:#c2185b>JC</span>'">
+      </div>
+      <div class="bank-info">
+        <div class="bank-name">JazzCash</div>
+        <div class="bank-type">Mobile Wallet</div>
+      </div>
+      <div class="bank-arrow">›</div>
+    </div>
+
+    <div class="bank-card" onclick="openBank('upaisa')">
+      <div class="bank-logo-wrap">
+        <img src="https://play-lh.googleusercontent.com/ooBkNSFyBxBsWTobzJdQ3tlasX3dBiLwHdJRW1bS_Yv22L4W4pI-bFzYFfqNfUHFCc=w96-h96-rw" alt="Upaisa" onerror="this.outerHTML='<span class=bank-logo-fallback style=color:#2e7d32>UP</span>'">
+      </div>
+      <div class="bank-info">
+        <div class="bank-name">Upaisa</div>
+        <div class="bank-type">Mobile Wallet</div>
+      </div>
+      <div class="bank-arrow">›</div>
+    </div>
+
+    <div class="bank-card" onclick="openBank('hbl')">
+      <div class="bank-logo-wrap">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/HBL_logo_%282023%29.png/240px-HBL_logo_%282023%29.png" alt="HBL" onerror="this.outerHTML='<span class=bank-logo-fallback style=color:#1b5e20>HBL</span>'">
+      </div>
+      <div class="bank-info">
+        <div class="bank-name">HBL</div>
+        <div class="bank-type">Internet Banking / IBFT</div>
+      </div>
+      <div class="bank-arrow">›</div>
+    </div>
+
+    <div class="bank-card" onclick="openBank('metro')">
+      <div class="bank-logo-wrap">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/HabibMetro_logo.svg/240px-HabibMetro_logo.svg.png" alt="HabibMetro" onerror="this.outerHTML='<span class=bank-logo-fallback style=color:#0d47a1>HM</span>'">
+      </div>
+      <div class="bank-info">
+        <div class="bank-name">Habib Metro Bank</div>
+        <div class="bank-type">Internet Banking / IBFT</div>
+      </div>
+      <div class="bank-arrow">›</div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    Payment ke baad screenshot zaroor lein<br>
+    Kisi bhi masle ke liye WhatsApp karein
+  </div>
+
+</div>
+
+<!-- Detail Panel -->
+<div class="detail-overlay" id="overlay" onclick="closeIfOutside(event)">
+  <div class="detail-panel">
+    <div class="detail-handle"></div>
+    <div class="detail-bank-header">
+      <div class="detail-logo-wrap">
+        <img id="d-logo" src="" alt="">
+      </div>
+      <div>
+        <div class="detail-title" id="d-name"></div>
+        <div class="detail-subtitle" id="d-type"></div>
+      </div>
+    </div>
+    <div class="detail-rows" id="d-rows"></div>
+    <button class="close-detail" onclick="closeBank()">✓ &nbsp;Wapas jaon</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const banks = {
+  nayapay: {
+    name:'NayaPay', type:'Digital Wallet',
+    logo:'https://play-lh.googleusercontent.com/RxggBRFdRU7YCFIhVqPVjrN_Vw5cqkGMi_OdVwWh2mxHWJgZPSH6hHNJMHp0OQMLA=w96-h96-rw',
+    fields:[{key:'Mobile Number',val:'0321-8942141'},{key:'Account Title',val:'Muhammad Shafiullah'},{key:'Amount',val:'Rs. 375'}]
+  },
+  jazzcash: {
+    name:'JazzCash', type:'Mobile Wallet',
+    logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/JazzCash_logo_%282025%29.png/240px-JazzCash_logo_%282025%29.png',
+    fields:[{key:'Mobile Number',val:'0307-2244658'},{key:'Account Title',val:'Muhammad Shafiullah'},{key:'Amount',val:'Rs. 375'}]
+  },
+  upaisa: {
+    name:'Upaisa', type:'Mobile Wallet',
+    logo:'https://play-lh.googleusercontent.com/ooBkNSFyBxBsWTobzJdQ3tlasX3dBiLwHdJRW1bS_Yv22L4W4pI-bFzYFfqNfUHFCc=w96-h96-rw',
+    fields:[{key:'Mobile Number',val:'0321-8942141'},{key:'Account Title',val:'Muhammad Shafiullah'},{key:'Amount',val:'Rs. 375'}]
+  },
+  hbl: {
+    name:'HBL', type:'Internet Banking / IBFT',
+    logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/HBL_logo_%282023%29.png/240px-HBL_logo_%282023%29.png',
+    fields:[{key:'IBAN',val:'PK63HABB0023097000581003'},{key:'Account Title',val:'Muhammad Shafiullah'},{key:'Amount',val:'Rs. 375'}]
+  },
+  metro: {
+    name:'Habib Metro Bank', type:'Internet Banking / IBFT',
+    logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/HabibMetro_logo.svg/240px-HabibMetro_logo.svg.png',
+    fields:[{key:'IBAN',val:'PK45MPBL0150027140183543'},{key:'Account Title',val:'Muhammad Shafiullah'},{key:'Amount',val:'Rs. 375'}]
+  }
+};
+
+function openBank(id) {
+  const b = banks[id];
+  document.getElementById('d-logo').src = b.logo;
+  document.getElementById('d-logo').alt = b.name;
+  document.getElementById('d-name').textContent = b.name;
+  document.getElementById('d-type').textContent = b.type;
+  let rows = '';
+  b.fields.forEach(f => {
+    rows += `<div class="detail-row">
+      <div class="detail-key">${f.key}</div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+        <div class="detail-val">${f.val}</div>
+        <button class="copy-btn" onclick="copyVal('${f.val}')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M16 1H4C3 1 2 2 2 3v14h2V3h12V1zm3 4H8C7 5 6 6 6 7v14c0 1 1 2 2 2h11c1 0 2-1 2-2V7c0-1-1-2-2-2zm0 16H8V7h11v14z"/></svg>
+          Copy
+        </button>
+      </div>
+    </div>`;
+  });
+  document.getElementById('d-rows').innerHTML = rows;
+  document.getElementById('overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeBank() {
+  document.getElementById('overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeIfOutside(e) {
+  if (e.target === document.getElementById('overlay')) closeBank();
+}
+
+function copyVal(text) {
+  navigator.clipboard.writeText(text).then(() => showToast('Copied: ' + text));
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>
